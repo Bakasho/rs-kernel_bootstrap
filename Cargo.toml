@@ -1,0 +1,10 @@
+[package]
+name = "kernel_bootstrap"
+version = "0.1.0"
+authors = ["nathanfaucett <nathanfaucett@gmail.com>"]
+
+[dependencies]
+rlibc = "1.0"
+
+[lib]
+crate-type = ["staticlib"]
