@@ -1,11 +1,12 @@
 .section .multiboot_header
+.code32
 
-header_start:
-    .long 0xe85250d6             /* magic number (multiboot 2) */
+multiboot_header_start:
+    .long 0xE85250D6             /* magic number (multiboot 2) */
     .long 0                      /* architecture 0 (protected mode i386) */
-    .long header_end - header_start
+    .long multiboot_header_end - multiboot_header_start
     /* checksum */
-    .long 0x100000000 - (0xe85250d6 + 0 + (header_end - header_start))
+    .long 0x100000000 - (0xE85250D6 + 0 + (multiboot_header_end - multiboot_header_start))
 
     /* insert optional multiboot tags here */
 
@@ -13,4 +14,4 @@ header_start:
     .word 0 /* type */
     .word 0 /* flags */
     .long 8 /* size */
-header_end:
+multiboot_header_end:

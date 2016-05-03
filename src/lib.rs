@@ -2,13 +2,13 @@
 #![no_std]
 
 
+#[macro_use]
+extern crate vga;
 extern crate rlibc;
 
 
 #[no_mangle]
-pub extern "C" fn __rust_main() {
-    // ATTENTION: we have a very small stack and no guard page
-
+pub extern "C" fn _kernel_main(multiboot_information_address: usize) {
     let hello = b"Hello World!";
     let color_byte = 0x1f; // white foreground, blue background
 
@@ -19,15 +19,23 @@ pub extern "C" fn __rust_main() {
 
     // write `Hello World!` to the center of the VGA text buffer
     let buffer_ptr = (0xb8000 + 1988) as *mut _;
-    unsafe { *buffer_ptr = hello_colored };
+    unsafe {
+        *buffer_ptr = hello_colored
+    };
 
     loop {}
 }
 
-#[cfg(not(test))]
+#[allow(non_snake_case)]
+#[no_mangle]
+pub extern "C" fn _Unwind_Resume() -> ! { loop{} }
+
 #[lang = "eh_personality"]
 extern "C" fn eh_personality() {}
 
-#[cfg(not(test))]
 #[lang = "panic_fmt"]
-extern "C" fn panic_fmt() -> ! {loop{}}
+extern fn panic_fmt(fmt: core::fmt::Arguments, file: &str, line: u32) -> ! {
+    vga_println!("\n\nPANIC in {} at line {}:", file, line);
+    vga_println!("    {}", fmt);
+    loop{}
+}

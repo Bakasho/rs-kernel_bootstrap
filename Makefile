@@ -1,49 +1,72 @@
-arch ?= x86_64
-target ?= $(arch)-unknown-linux-gnu
-machine ?= pc
-ld ?= $(arch)-ld
-as ?= $(arch)-as
+arch ?= x86
+qemu_arch ?= i386
+rust_arch ?= i586
+gnu_arch ?= i386
+
+bits ?= 32
+gnu_machine ?= generic$(bits)
+
+machine ?= unknown
+os ?= linux
+other ?= gnu
+
+gnu_target ?= $(gnu_arch)-$(machine)-$(os)-$(other)
+rust_target ?= $(rust_arch)-$(machine)-$(os)-$(other)
+
+ld ?= $(gnu_target)-ld
+as ?= $(gnu_target)-as
+nm ?= $(gnu_target)-nm
+
+device ?= pc
+
+asm_arch_src_files := $(wildcard src/arch/$(arch)/*.s)
+asm_noarch_src_files := $(wildcard src/arch/*.s)
+
+asm_src_files := $(asm_arch_src_files) $(asm_noarch_src_files)
+asm_obj_files := \
+	$(patsubst src/arch/$(arch)/%.s, build/arch/$(arch)/%.o, $(asm_arch_src_files)) \
+	$(patsubst src/arch/%.s, build/arch/%.o, $(asm_noarch_src_files))
 
 all: run
 
 clean:
 	cargo clean
-	rm -rf dest
+	rm -rf build
 
 run: build_iso
-	qemu-system-$(arch) -machine $(machine) \
-		-cdrom dest/os_$(arch).iso
+	qemu-system-$(qemu_arch) -machine $(device) \
+		-cdrom build/os_$(arch).iso
 
 debug: build_iso
-	qemu-system-$(arch) -machine $(machine) \
-		-cdrom dest/os_$(arch).iso \
+	qemu-system-$(qemu_arch) -machine $(device) \
+		-cdrom build/os_$(arch).iso \
 		-monitor stdio
 
 inspect: build
-	$(arch)-nm -n dest/kernel_$(arch).bin
+	$(nm) -n build/kernel_$(arch).bin
 
 build_iso: build
-	mkdir -p dest/isofiles/boot/grub
-	cp dest/kernel_$(arch).bin dest/isofiles/boot/kernel.bin
-	cp src/arch/$(arch)/grub.cfg dest/isofiles/boot/grub
-	grub-mkrescue -o dest/os_$(arch).iso dest/isofiles 2> /dev/null
+	mkdir -p build/isofiles/boot/grub
+	cp build/kernel_$(arch).bin build/isofiles/boot/kernel.bin
+	cp src/arch/grub.cfg build/isofiles/boot/grub
+	grub-mkrescue -o build/os_$(arch).iso build/isofiles 2> /dev/null
 
-build: build_init build_asm build_cargo build_linker
+build: build_init $(asm_obj_files) build_cargo build_linker
 
 build_init:
-	mkdir -p dest
+	mkdir -p build/arch/$(arch)
 
 build_cargo:
-	cargo rustc --target $(target) -- -Z no-landing-pads
+	cargo rustc --target $(rust_target) -- -Z no-landing-pads
 
 build_linker:
 	$(ld) -n --gc-sections \
-		-o dest/kernel_$(arch).bin \
-		dest/multiboot_header.o dest/long_mode_init.o dest/boot.o \
-		target/$(target)/debug/libkernel_bootstrap.a \
-		-T src/arch/$(arch)/linker.ld
+		-o build/kernel_$(arch).bin \
+		$(asm_obj_files) target/$(rust_target)/debug/libkernel_bootstrap.a \
+		-T src/arch/linker.ld
 
-build_asm:
-	$(as) src/arch/$(arch)/multiboot_header.s -o dest/multiboot_header.o
-	$(as) src/arch/$(arch)/long_mode_init.s -o dest/long_mode_init.o
-	$(as) src/arch/$(arch)/boot.s -o dest/boot.o
+build/arch/$(arch)/%.o: src/arch/$(arch)/%.s
+	$(as) --$(bits) -march=$(gnu_machine) $< -o $@
+
+build/arch/%.o: src/arch/%.s
+	$(as) --$(bits) -march=$(gnu_machine)  $< -o $@

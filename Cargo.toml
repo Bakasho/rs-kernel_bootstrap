@@ -3,8 +3,18 @@ name = "kernel_bootstrap"
 version = "0.1.0"
 authors = ["nathanfaucett <nathanfaucett@gmail.com>"]
 
+keywords = ["kernel_bootstrap"]
+description = "minimal setup to get rust running"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/Bakasho/rs-kernel_bootstrap.git"
+homepage = "https://github.com/Bakasho/rs-kernel_bootstrap"
+
 [dependencies]
 rlibc = "1.0"
+
+[dependencies.vga]
+git = "https://github.com/nathanfaucett/rs-vga.git"
 
 [lib]
 crate-type = ["staticlib"]
