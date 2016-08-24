@@ -1,4 +1,4 @@
-kernel bootstrap
+os
 =====
 
-minimal setup to get rust running
+minimal operating system written in rust

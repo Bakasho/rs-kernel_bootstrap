@@ -1,20 +1,29 @@
 [package]
-name = "kernel_bootstrap"
+name = "os"
 version = "0.1.0"
 authors = ["nathanfaucett <nathanfaucett@gmail.com>"]
 
-keywords = ["kernel_bootstrap"]
-description = "minimal setup to get rust running"
+keywords = ["os", "operating", "system"]
+description = "minimal operating system written in rust"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/Bakasho/rs-kernel_bootstrap.git"
-homepage = "https://github.com/Bakasho/rs-kernel_bootstrap"
+repository = "https://github.com/nathanfaucett/rs-os.git"
+homepage = "https://github.com/nathanfaucett/rs-os"
 
 [dependencies]
 rlibc = "1.0"
 
 [dependencies.vga]
-git = "https://github.com/nathanfaucett/rs-vga.git"
+#git = "https://github.com/nathanfaucett/rs-vga.git"
+path = "../rs-vga"
+
+[dependencies.multiboot2]
+#git = "https://github.com/nathanfaucett/rs-multiboot2.git"
+path = "../rs-multiboot2"
+
+[dependencies.kernel]
+#git = "https://github.com/nathanfaucett/rs-kernel.git"
+path = "../rs-kernel"
 
 [lib]
 crate-type = ["staticlib"]

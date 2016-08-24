@@ -43,11 +43,11 @@ debug: build_iso
 		-monitor stdio
 
 inspect: build
-	$(nm) -n build/kernel_$(arch).bin
+	$(nm) -n build/os_$(arch).bin
 
 build_iso: build
 	mkdir -p build/isofiles/boot/grub
-	cp build/kernel_$(arch).bin build/isofiles/boot/kernel.bin
+	cp build/os_$(arch).bin build/isofiles/boot/os.bin
 	cp src/arch/grub.cfg build/isofiles/boot/grub
 	grub-mkrescue -o build/os_$(arch).iso build/isofiles 2> /dev/null
 
@@ -60,9 +60,9 @@ build_cargo:
 	cargo rustc --target $(rust_target) -- -Z no-landing-pads
 
 build_linker:
-	$(ld) -n --gc-sections \
-		-o build/kernel_$(arch).bin \
-		$(asm_obj_files) target/$(rust_target)/debug/libkernel_bootstrap.a \
+	$(ld) -O -n --gc-sections \
+		-o build/os_$(arch).bin \
+		$(asm_obj_files) target/$(rust_target)/debug/libos.a \
 		-T src/arch/linker.ld
 
 build/arch/$(arch)/%.o: src/arch/$(arch)/%.s
