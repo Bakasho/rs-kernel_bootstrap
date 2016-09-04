@@ -1,7 +1,7 @@
 arch ?= x86
 qemu_arch ?= i386
 rust_arch ?= i586
-gnu_arch ?= i386
+gnu_arch ?= i586
 
 bits ?= 32
 gnu_machine ?= generic$(bits)

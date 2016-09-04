@@ -1,7 +1,7 @@
 ENTRY(__os_start)
 
 SECTIONS {
-  . = 0x000000;
+  . = 0x100000;
 
   .rodata : ALIGN(4K) {
     KEEP(*(.multiboot_header))

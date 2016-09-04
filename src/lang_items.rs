@@ -11,6 +11,6 @@ extern "C" fn eh_personality() {}
 #[lang = "panic_fmt"]
 extern fn panic_fmt(fmt: core::fmt::Arguments, file: &str, line: u32) -> ! {
     vga_println!("\n\nPANIC in {} at line {}:", file, line);
-    vga_println!("    {}", fmt);
+    vga_println!("\t\t{}", fmt);
     loop{}
 }

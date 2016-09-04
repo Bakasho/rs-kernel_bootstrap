@@ -27,7 +27,7 @@ __os_start:
   cli
 
   /* Move Multiboot info pointer to edi to pass it to the kernel. We must not */
-  /* modify the `edi` register until the kernel it called. */
+  /* modify the `edi` register until the kernel is called. */
   movl %ebx, %edi
 
   call check_multiboot
@@ -106,14 +106,14 @@ error:
   hlt
 
 
+  .section .data
+  .align 4096
+  .global __os_page_directory, __os_page_tables
+
+
 .section .bss
 .align 4096
-.global kernel_page_directory, kernel_page_table
 
-kernel_page_directory:
-  .skip 1024 * 4         /* 1024 page tables entry addresses */
-kernel_page_table:
-  .skip 1024 * 4 * 1024  /* 1024 page entries each with size 4096 */
 
 kernel_stack_bottom:
   .skip 65535
