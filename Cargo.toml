@@ -25,13 +25,5 @@ path = "../rs-multiboot2"
 #git = "https://github.com/nathanfaucett/rs-kernel.git"
 path = "../rs-kernel"
 
-[dependencies.paging]
-#git = "https://github.com/nathanfaucett/rs-paging.git"
-path = "../rs-paging"
-
-[dependencies.memory]
-#git = "https://github.com/nathanfaucett/rs-memory.git"
-path = "../rs-memory"
-
 [lib]
 crate-type = ["staticlib"]

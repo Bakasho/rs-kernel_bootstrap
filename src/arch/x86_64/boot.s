@@ -96,32 +96,21 @@ no_cpuid:
   jmp error
 
 
-/* Prints `ERR: ` and the given error code to screen and hangs. */
-/* parameter: error code (in ascii) in al */
-error:
-  movl $0x4f524f45, (0xb8000)
-  movl $0x4f3a4f52, (0xb8004)
-  movl $0x4f204f20, (0xb8008)
-  movb %al, (0xb800a)
-  hlt
-
-
 check_long_mode:
   /* test if extended processor info in available */
   /* implicit argument for cpuid */
-  movl $0x80000000, %eax
-
+  movl $0x80000000,%eax
   /* get highest supported argument */
   cpuid
   /* it needs to be at least 0x80000001 */
-  cmpl $0x80000001, %eax
+  cmpl $0x80000001,%eax
 
   /* if it's less, the CPU is too old for long mode */
   jb no_long_mode
 
   /* use extended info to test if long mode is available */
   /* argument for extended processor info */
-  movl $0x80000001, %eax
+  movl $0x80000001,%eax
   /* returns various feature bits in ecx and edx */
   cpuid
 
@@ -132,6 +121,16 @@ check_long_mode:
 no_long_mode:
   movb $'2', %al
   jmp error
+
+
+/* Prints `ERR: ` and the given error code to screen and hangs. */
+/* parameter: error code (in ascii) in al */
+error:
+  movl $0x4f524f45, (0xb8000)
+  movl $0x4f3a4f52, (0xb8004)
+  movl $0x4f204f20, (0xb8008)
+  movb %al, (0xb800a)
+  hlt
 
 
 .section .data

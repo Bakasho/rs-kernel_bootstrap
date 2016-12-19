@@ -4,12 +4,9 @@
 
 #[macro_use]
 extern crate vga;
-
 extern crate rlibc;
 extern crate multiboot2;
 extern crate kernel;
-extern crate paging;
-extern crate memory;
 
 
 pub mod lang_items;
@@ -17,7 +14,6 @@ pub mod lang_items;
 
 use multiboot2::Multiboot2;
 use kernel::Kernel;
-use paging::arch;
 
 
 #[no_mangle]
@@ -51,18 +47,11 @@ pub extern "C" fn __os_main(multiboot_information_address: usize) -> ! {
         memory_map_tag.get_memory_areas()
     );
 
-    unsafe {
-        paging::init(0x1000000);
-        memory::init(arch::get_page_end());
-    }
-
     vga_println!(
         "Kernel start: {:?} end: {:?}, boot_start: {:?} boot_end: {:?}",
         kernel.get_kernel_start_address(), kernel.get_kernel_end_address(),
         kernel.get_boot_start_address(), kernel.get_kernel_end_address()
     );
-
-    vga_println!("Hello, world!");
 
     loop {}
 }

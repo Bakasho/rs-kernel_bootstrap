@@ -1,10 +1,18 @@
+#
 arch ?= x86
 qemu_arch ?= i386
 rust_arch ?= i586
 gnu_arch ?= i586
-
 bits ?= 32
-gnu_machine ?= generic$(bits)
+gnu_machine ?= i586
+
+#\
+arch ?= x86_64\
+qemu_arch ?= x86_64\
+rust_arch ?= x86_64\
+gnu_arch ?= x86_64\
+bits ?= 64\
+gnu_machine ?= core2\
 
 machine ?= unknown
 os ?= linux
@@ -35,11 +43,11 @@ clean:
 
 run: build_iso
 	qemu-system-$(qemu_arch) -machine $(device) \
-		-cdrom build/os_$(arch).iso
+		-cdrom build/$(arch)-os.iso
 
 debug: build_iso
 	qemu-system-$(qemu_arch) -machine $(device) \
-		-cdrom build/os_$(arch).iso \
+		-cdrom build/$(arch)-os.iso \
 		-monitor stdio
 
 inspect: build
@@ -49,7 +57,7 @@ build_iso: build
 	mkdir -p build/isofiles/boot/grub
 	cp build/os_$(arch).bin build/isofiles/boot/os.bin
 	cp src/arch/grub.cfg build/isofiles/boot/grub
-	grub-mkrescue -o build/os_$(arch).iso build/isofiles 2> /dev/null
+	grub-mkrescue -o build/$(arch)-os.iso build/isofiles 2> /dev/null
 
 build: build_init $(asm_obj_files) build_cargo build_linker
 
